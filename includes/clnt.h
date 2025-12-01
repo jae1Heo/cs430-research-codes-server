@@ -12,6 +12,7 @@
 
 typedef uint16_t data_size;
 
+#define MAX_CLIENTS 2
 
 /*
 
@@ -23,8 +24,6 @@ ball x uint16_t
 ball y uint16_t
 stop game uint16_t
 fin zeros uint16_t*/
-
-enum {player1_x = 0, player1_y, player2_x, player2_y, player1_score, player2_score, ball_x, ball_y, stop_game, reserved};
 
 typedef struct one_way_channel {
     data_size* data;
@@ -38,6 +37,14 @@ typedef struct two_way_channel {
     struct one_way_channel command;
     struct one_way_channel response;
 } two_way;
+
+typedef struct client_info{
+    struct sock clnt_sock;
+    struct two_way_channel* channel;
+    int clinet_id;
+    unsigned char key[AES_KEY_SIZE];
+    unsigned char iv[AES_GCM_IV_SIZE];
+} client_info_t;
 
 int init_channel(struct one_way_channel*); // initialize one way mutex
 int init_twoway(struct two_way_channel*); // initialize two way mutex

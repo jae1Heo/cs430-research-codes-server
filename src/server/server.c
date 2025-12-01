@@ -49,3 +49,63 @@ int connect_client(struct sock* serv_sock, struct sock* clnt_sock) {
 
     return 1;
 }
+
+int send_all(struct sock* clnt_sock, const void* buffer, size_t buffer_len) {
+    size_t total_sent = 0;
+    const uint8_t* partial = (const uint8_t*)buffer;
+    
+    while(total_sent < buffer_len) {
+        ssize_t sent = send(clnt_sock->sock_fd, partial + total_sent, buffer_len - total_sent, 0);
+        if(sent <= 0) {
+            return 0;
+        }
+        total_sent += sent;
+    }
+
+    return 1;
+}
+
+int recv_all(struct sock* clnt_sock, void* buffer, size_t buffer_len) {
+    size_t total_recv = 0;
+    uint8_t* partial = (uint8_t*)buffer;
+
+    while(total_recv < buffer_len) {
+        ssize_t recvd = recv(clnt_sock->sock_fd, partial + total_recv, buffer_len - total_recv, 0);
+        if(recvd <= 0) {
+            return 0;
+        }
+        total_recv += recvd;
+    }
+    return 1;
+}
+
+int send_packet(struct sock* clnt_sock, const void* packet, uint16_t packet_len) {
+    uint16_t net_len = htons(packet_len);
+    if(!send_all(clnt_sock, &net_len, sizeof(net_len))) {
+        return 0;
+    }
+
+    if(!send_all(clnt_sock, packet, packet_len)) {
+        return 0;
+    }
+
+    return 1;
+}
+
+int recv_packet(struct sock* clnt_sock, void* buffer, uint16_t* packet_len) {
+    uint16_t net_len;
+    if(!recv_all(clnt_sock, &net_len, sizeof(net_len))) {
+        return 0;
+    }
+
+    uint16_t data_len = ntohs(net_len);
+    if(!recv_all(clnt_sock, buffer, data_len)) {
+        return 0;
+    }
+
+    if (packet_len) {
+        *packet_len = data_len;
+    }
+
+    return 1;
+}

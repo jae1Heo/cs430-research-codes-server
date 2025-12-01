@@ -39,5 +39,7 @@ int decrypt_packet(const unsigned char *ciphertext,
 int hash_packet(const packet_data packet[PACKET_SIZE], unsigned char output[SHA256_HASH_SIZE]);
 int verify_hash(const unsigned char hash1[SHA256_HASH_SIZE], const unsigned char hash2[SHA256_HASH_SIZE]);
 
+// verify attestation
+int verify_key_attestation(const unsigned char *attestation, size_t att_size, EVP_PKEY **client_pubkey);
 
 #endif

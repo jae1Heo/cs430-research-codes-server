@@ -21,7 +21,7 @@ data_size = uint16_t
 
 
 int init_channel(struct one_way_channel* owc){
-    owc->data = (data_size)malloc(sizeof(data_size) * PACKET_SIZE);
+    owc->data = malloc(sizeof(data_size) * PACKET_SIZE);
 
     if(owc->data == NULL) {
         return 0;
@@ -92,6 +92,42 @@ void* client_main(void *arg) {
 
 
 void* client_main(void* args){
+    struct client_info* client = (struct client_info*)args;
+    packet_data recv_buffer[PACKET_SIZE];
+    packet_data send_buffer[PACKET_SIZE];
+    unsigned char ciphertext[PACKET_SIZE * sizeof(packet_data)];
+    unsigned char tag[AES_GCM_TAG_SIZE];
+    uint16_t p_len;
+
+    while(1) {
+        if(!recv_packet(&client->clnt_sock, ciphertext, &p_len)) {
+            fputs("client disconnected", stderr);
+            break;
+        }
+
+        if(decrypt_packet(ciphertext, p_len, client->key, client->iv, tag, recv_buffer) <= 0) {
+            fputs("decryption failed", stderr);
+            break;
+        }
+        
+        // send data to main process
+        channel_send(&client->channel->command, recv_buffer);
+        // rreceive data from the main process
+        channel_receive(&client->channel->response, send_buffer);
+
+        int enc_len = encrypt_packet(send_buffer, client->key, client->iv, ciphertext, tag);
+        if(enc_len <= 0) {
+            fputs("encryption failed", stderr);
+            continue;
+        }
+
+        if(!send_packet(&client->clnt_sock, ciphertext, enc_len)) {
+            fputs("failed to send to client", stderr);
+            break;
+        }
+    }
+
+    return NULL;
 
 } // client work
 
