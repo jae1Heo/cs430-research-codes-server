@@ -22,16 +22,32 @@ data_size = uint16_t
 
 int init_channel(struct one_way_channel* owc){
     owc->data = (data_size)malloc(sizeof(data_size) * PACKET_SIZE);
+
+    if(owc->data == NULL) {
+        return 0;
+    }
+
     memset(owc->data, 0, sizeof(data_size) * PACKET_SIZE);
     owc->has_data = 0;
 
     pthread_mutex_init(&owc->mutex, NULL);
     pthread_cond_init(&owc->cond, NULL);
+    
+    return 1;
 } // initialize one way mutex
 
 int init_twoway(struct two_way_channel* twc){
-    init_channel(&twc->command);
-    init_channel(&twc->response);
+    
+    if(!init_channel(&twc->command)) {
+        perror("init_channel() command error");
+        return 0;
+    }
+    if(!init_channel(&twc->response)) {
+        perror("init_channel() response error");
+        return 0;
+    }
+
+    return 1;
 } // initialize two way mutex
 
 /*
@@ -96,7 +112,7 @@ void channel_receive(struct one_way_channel* owc, data_size buffer[PACKET_SIZE])
         pthread_cond_wait(&owc->cond, &owc->mutex);
     }
 
-    memcpy(buffer, owc->data, PACKET_SIZE);
+    memcpy(buffer, owc->data, sizeof(data_size) * PACKET_SIZE);
     owc->has_data = 0;
 
     pthread_cond_signal(&owc->cond);
@@ -105,9 +121,23 @@ void channel_receive(struct one_way_channel* owc, data_size buffer[PACKET_SIZE])
 } // receive data from the parent process
 
 void close_twoway(struct two_way_channel* channel) {
+    if(channel == NULL) {
+        return;
+    }
 
+    close_channel(&channel->command);
+    close_channel(&channel->response);
+    free(channel);
 }
 
 void close_channel(struct one_way_channel* channel) {
 
+    if(channel == NULL) {
+        return;
+    }
+    free((void*)channel->data);
+    channel->data = NULL;
+
+    pthread_mutex_destroy(&channel->mutex);
+    pthread_cond_destroy(&channel->cond);
 }

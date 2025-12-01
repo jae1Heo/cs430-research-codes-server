@@ -67,8 +67,10 @@ void update_score(packet_data buffer_player_1[PACKET_SIZE], packet_data buffer_p
 void sync_movement(packet_data buffer_player_1[PACKET_SIZE], packet_data buffer_player_2[PACKET_SIZE]) {
     packet_data player1_pos_x = validate_data(buffer_player_1[player1_x], buffer_player_2[player1_x]);
     packet_data player1_pos_y = validate_data(buffer_player_1[player1_y], buffer_player_2[player1_y]);
-    packet_data player2_pos_x = validate_data(buffer_player_1[player2_x], buffer_player_2[player2_y]);
+    packet_data player2_pos_x = validate_data(buffer_player_1[player2_x], buffer_player_2[player2_x]);
     packet_data player2_pos_y = validate_data(buffer_player_1[player2_y], buffer_player_2[player2_y]);
+    packet_data ball_pos_x = validate_data(buffer_player_1[ball_x], buffer_player_2[ball_x]);
+    packet_data ball_pos_y = validate_data(buffer_player_1[ball_y], buffer_player_2[ball_y]);
 
    if(player1_pos_x != PACKET_INVALID) {
         buffer_player_1[player1_x] = player1_pos_x;
@@ -88,5 +90,15 @@ void sync_movement(packet_data buffer_player_1[PACKET_SIZE], packet_data buffer_
     if(player2_pos_y != PACKET_INVALID) {
         buffer_player_1[player2_y] = player2_pos_y;
         buffer_player_2[player2_y] = player2_pos_y;
+    }
+
+    if(ball_pos_x != PACKET_INVALID) {
+        buffer_player_1[ball_x] = ball_pos_x;
+        buffer_player_2[ball_x] = ball_pos_x;
+    }
+
+    if(ball_pos_y != PACKET_INVALID) {
+        buffer_player_1[ball_y] = ball_pos_y;
+        buffer_player_2[ball_y] = ball_pos_y;
     }
 }

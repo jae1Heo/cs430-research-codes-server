@@ -2,7 +2,7 @@
 #define __CLNT_H__
 
 #include "server.h"
-#include "game.h"
+#include "auth.h"
 
 #include <stdio.h>
 #include <stdlib.h>
