@@ -30,6 +30,8 @@ int init_server(struct sock* serv_sock, const unsigned short un_port) {
     return 1;
 }
 
+
+// called by client thread
 int connect_client(struct sock* serv_sock, struct sock* clnt_sock) {
     if(serv_sock == NULL) {
         fputs("server socket not initialized", stderr);

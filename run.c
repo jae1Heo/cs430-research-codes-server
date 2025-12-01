@@ -8,6 +8,8 @@ int main(int argc, char* argv[]) {
     struct sock serv_sock;
     struct sock clnt_sock;
 
+
+
     memset((void*)&serv_sock, 0, sizeof(struct sock));
     memset((void*)&clnt_sock, 0, sizeof(struct sock));
 
