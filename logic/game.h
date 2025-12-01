@@ -10,6 +10,7 @@
 #define ORIGIN 0
 #define WIDTH 1280
 #define HEIGHT 800
+#define PACKET_INVALID 0xFFFF
 
 /*
 game data will be packed as packet_data variable and sent to the clients

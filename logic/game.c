@@ -11,7 +11,7 @@ packet_data validate_data(packet_data from_clnt1, packet_data from_clnt2) {
         return from_clnt1;
     }
     else {
-        return -1;
+        return PACKET_INVALID;
     }
 }
 
@@ -39,7 +39,15 @@ const int calculate_score(packet_data ball_pos_x, packet_data ball_pos_y) {
 void update_score(packet_data buffer_player_1[PACKET_SIZE], packet_data buffer_player_2[PACKET_SIZE]) {
 
     packet_data ball_pos_x = validate_data(buffer_player_1[ball_x], buffer_player_2[ball_x]);
+
+    if(ball_pos_x == PACKET_INVALID) {
+        return;
+    }
+    
     packet_data ball_pos_y = validate_data(buffer_player_1[ball_y], buffer_player_2[ball_y]);
+    if(ball_pos_y == PACKET_INVALID) {
+        return;
+    }
 
     int score_flag =  calculate_score(ball_pos_x, ball_pos_y);
 
@@ -48,12 +56,12 @@ void update_score(packet_data buffer_player_1[PACKET_SIZE], packet_data buffer_p
     }
 
     if(score_flag == 1) { // player 2 win
-        buffer_player_2[player1_score]++;
+        buffer_player_2[player2_score]++;
         buffer_player_1[player2_score]++;
     }
     else if(score_flag == 0) { // player 1 win
         buffer_player_1[player1_score]++;
-        buffer_player_2[player2_score]++;
+        buffer_player_2[player1_score]++;
     }
 }
 
