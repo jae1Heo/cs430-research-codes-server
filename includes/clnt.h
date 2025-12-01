@@ -1,8 +1,8 @@
 #ifndef __CLNT_H__
 #define __CLNT_H__
 
-#include "../server/server.h"
-#include "../logic/game.h"
+#include "server.h"
+#include "game.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,4 +1,4 @@
-#include "server/server.h"
+#include "../includes/clnt.h"
 
 int main(int argc, char* argv[]) {
 

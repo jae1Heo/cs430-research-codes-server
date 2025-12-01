@@ -1,5 +1,4 @@
-#include "game.h"
-
+#include "../../includes/game.h"
 
 void pack_data(packet_data buffer_player_1[PACKET_SIZE], packet_data buffer_player_2[PACKET_SIZE]) {
     update_score(buffer_player_1, buffer_player_2);
@@ -66,5 +65,5 @@ void update_score(packet_data buffer_player_1[PACKET_SIZE], packet_data buffer_p
 }
 
 void sync_movement(packet_data buffer_player_1[PACKET_SIZE], packet_data buffer_player_2[PACKET_SIZE]) {
-
+    
 }
