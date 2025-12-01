@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#define PACKET_SIZE 8
 typedef uint16_t data_size;
 
 
