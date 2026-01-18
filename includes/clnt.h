@@ -51,7 +51,7 @@ int init_twoway(struct two_way_channel*); // initialize two way mutex
 void* client_main(void*); // client work
 void channel_send(struct one_way_channel*, const data_size[PACKET_SIZE]); // send data to the parent process
 void channel_receive(struct one_way_channel*, data_size[PACKET_SIZE]); // receive data from the parent process
-void close_twoway(struct two_way_channel* channel);
-void close_channel(struct one_way_channel* channel);
+void close_twoway(struct two_way_channel*);
+void close_channel(struct one_way_channel*);
 
 #endif

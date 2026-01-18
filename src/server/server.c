@@ -14,7 +14,6 @@ int init_server(struct sock* serv_sock, const unsigned short un_port) {
     serv_sock->sock_addr.sin_family = AF_INET;
     serv_sock->sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_sock->sock_addr.sin_port = un_port;
-
     serv_sock->sock_len = sizeof(serv_sock->sock_addr);
 
     if(bind(serv_sock->sock_fd, (struct sockaddr*)&serv_sock->sock_addr, serv_sock->sock_len) < 0) {
@@ -52,7 +51,7 @@ int connect_client(struct sock* serv_sock, struct sock* clnt_sock) {
 
 int send_all(struct sock* clnt_sock, const void* buffer, size_t buffer_len) {
     size_t total_sent = 0;
-    const uint8_t* partial = (const uint8_t*)buffer;
+    uint8_t* partial = (const uint8_t*)buffer;
     
     while(total_sent < buffer_len) {
         ssize_t sent = send(clnt_sock->sock_fd, partial + total_sent, buffer_len - total_sent, 0);

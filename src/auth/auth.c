@@ -1,5 +1,7 @@
 #include "../../includes/auth.h"
 
+
+// not in use for now
 int generate_symmetric_key(unsigned char *key, size_t key_len) {
     if(!key || key_len != AES_KEY_SIZE) {
         return 0;
@@ -12,6 +14,8 @@ int generate_symmetric_key(unsigned char *key, size_t key_len) {
     return 1;
 }
 
+
+// not in use for now
 int generate_iv(unsigned char *iv, size_t iv_len) {
     if(!iv || iv_len != AES_GCM_IV_SIZE) {
         return 0;
@@ -23,6 +27,7 @@ int generate_iv(unsigned char *iv, size_t iv_len) {
 
     return 1;
 }
+
 
 int encrypt_packet(const packet_data plaintext[PACKET_SIZE],
                    unsigned char *key,

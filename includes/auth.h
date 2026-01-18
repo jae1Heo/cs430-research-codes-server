@@ -22,11 +22,11 @@ int generate_symmetric_key(unsigned char *key, size_t key_len);
 int generate_iv(unsigned char *iv, size_t iv_len);
 
 // Packet encryption/decryption
-int encrypt_packet(const packet_data plaintext[PACKET_SIZE],
-                   unsigned char *key,
-                   unsigned char *iv,
-                   unsigned char *ciphertext,
-                   unsigned char *tag);
+int encrypt_packet(const packet_data[PACKET_SIZE],
+                   unsigned char *,
+                   unsigned char *,
+                   unsigned char *,
+                   unsigned char *);
 
 int decrypt_packet(const unsigned char *ciphertext,
                    int ciphertext_len,

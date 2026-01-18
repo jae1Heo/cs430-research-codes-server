@@ -90,8 +90,8 @@ void* client_main(void *arg) {
 
 */
 
-
 void* client_main(void* args){
+    
     struct client_info* client = (struct client_info*)args;
     packet_data recv_buffer[PACKET_SIZE];
     packet_data send_buffer[PACKET_SIZE];
