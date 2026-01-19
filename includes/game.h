@@ -24,7 +24,7 @@
 #define TICK_DT (1.0f / TICK_RATE)
 
 #define RAW_PACKET_SIZE 9
-#define PACKET_SIZE 4
+#define PACKET_MAX 256
 typedef uint16_t packet_data;
 
 /*

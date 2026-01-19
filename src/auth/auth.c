@@ -29,7 +29,7 @@ int generate_iv(unsigned char *iv, size_t iv_len) {
 }
 
 
-int encrypt_packet(const packet_data plaintext[PACKET_SIZE],
+int encrypt_packet(const unsigned char plaintext[PACKET_MAX],
                    unsigned char *key,
                    unsigned char *iv,
                    unsigned char *ciphertext,
@@ -48,7 +48,7 @@ int encrypt_packet(const packet_data plaintext[PACKET_SIZE],
     if(!EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL)) {return 0;}
     if(!EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv)) {return 0;}
 
-    if(!EVP_EncryptUpdate(ctx, ciphertext, &len, (unsigned char*)plaintext, sizeof(packet_data)*PACKET_SIZE)) {return 0;}
+    if(!EVP_EncryptUpdate(ctx, ciphertext, &len, (unsigned char*)plaintext, sizeof(unsigned char)*PACKET_MAX)) {return 0;}
     ciphertext_len = len;
 
     if(!EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) {return 0;}
@@ -66,7 +66,7 @@ int decrypt_packet(const unsigned char *ciphertext,
                    unsigned char *key,
                    unsigned char *iv,
                    unsigned char *tag,
-                   packet_data plaintext[PACKET_SIZE]) {
+                   unsigned char plaintext[PACKET_MAX]) {
     if(!ciphertext || !key || !iv || !tag || !plaintext) 
     {
         return 0;
@@ -93,7 +93,7 @@ int decrypt_packet(const unsigned char *ciphertext,
 
 }
 
-int hash_packet(const packet_data packet[PACKET_SIZE], unsigned char output[SHA256_HASH_SIZE]) {
+int hash_packet(const unsigned char packet[PACKET_MAX], unsigned char output[SHA256_HASH_SIZE]) {
     if(!packet || !output) 
     {
         return 0;
@@ -101,7 +101,7 @@ int hash_packet(const packet_data packet[PACKET_SIZE], unsigned char output[SHA2
 
     SHA256_CTX sha256;
     SHA256_Init(&sha256);
-    SHA256_Update(&sha256, packet, sizeof(packet_data)*PACKET_SIZE);
+    SHA256_Update(&sha256, packet, sizeof(unsigned char)*PACKET_MAX);
     SHA256_Final(output, &sha256);
 
     return 1;

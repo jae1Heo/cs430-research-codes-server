@@ -22,7 +22,7 @@ int generate_symmetric_key(unsigned char *key, size_t key_len);
 int generate_iv(unsigned char *iv, size_t iv_len);
 
 // Packet encryption/decryption
-int encrypt_packet(const packet_data[PACKET_SIZE],
+int encrypt_packet(const unsigned char[PACKET_MAX],
                    unsigned char *,
                    unsigned char *,
                    unsigned char *,
@@ -33,10 +33,10 @@ int decrypt_packet(const unsigned char *ciphertext,
                    unsigned char *key,
                    unsigned char *iv,
                    unsigned char *tag,
-                   packet_data plaintext[PACKET_SIZE]);
+                   unsigned char plaintext[PACKET_MAX]);
 
 // Packet hashing
-int hash_packet(const packet_data packet[PACKET_SIZE], unsigned char output[SHA256_HASH_SIZE]);
+int hash_packet(const unsigned char packet[PACKET_MAX], unsigned char output[SHA256_HASH_SIZE]);
 int verify_hash(const unsigned char hash1[SHA256_HASH_SIZE], const unsigned char hash2[SHA256_HASH_SIZE]);
 
 // verify attestation

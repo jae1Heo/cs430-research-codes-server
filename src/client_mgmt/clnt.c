@@ -1,33 +1,15 @@
 #include "../../includes/clnt.h"
 
-/*
-
-1280x800 resolution
-
-required data:
-
-player 1 x, y uint16_t
-player 2 x, y uint16_t
-player 1 score uint16_t
-player 2 score uint16_t
-ball x uint16_t
-ball y uint16_t
-stop game uint16_t
-fin zeros uint16_t
-
-data_size = uint16_t
-
-*/
 
 
 int init_channel(struct one_way_channel* owc){
-    owc->data = malloc(sizeof(data_size) * PACKET_SIZE);
+    owc->data = malloc(sizeof(unsigned char) * PACKET_MAX);
 
     if(owc->data == NULL) {
         return 0;
     }
 
-    memset(owc->data, 0, sizeof(data_size) * PACKET_SIZE);
+    memset(owc->data, 0, sizeof(unsigned char) * PACKET_MAX);
     owc->has_data = 0;
 
     pthread_mutex_init(&owc->mutex, NULL);
@@ -93,13 +75,19 @@ void* client_main(void *arg) {
 void* client_main(void* args){
     
     struct client_info* client = (struct client_info*)args;
-    packet_data recv_buffer[PACKET_SIZE];
-    packet_data send_buffer[PACKET_SIZE];
-    unsigned char ciphertext[PACKET_SIZE * sizeof(packet_data)];
+    unsigned char recv_buffer[PACKET_MAX];
+    unsigned char send_buffer[PACKET_MAX];
+    unsigned char ciphertext[PACKET_MAX * sizeof(unsigned char)];
     unsigned char tag[AES_GCM_TAG_SIZE];
     uint16_t p_len;
 
     while(1) {
+        
+
+        /*
+        
+        not in use for now
+
         if(!recv_packet(&client->clnt_sock, ciphertext, &p_len)) {
             fputs("client disconnected", stderr);
             break;
@@ -109,11 +97,26 @@ void* client_main(void* args){
             fputs("decryption failed", stderr);
             break;
         }
+        */
+        if(!recv_packet(&client->clnt_sock, recv_buffer, &p_len)) {
+            fputs("client disconnected", stderr);
+            break;
+        }
         
         // send data to main process
         channel_send(&client->channel->command, recv_buffer);
         // rreceive data from the main process
         channel_receive(&client->channel->response, send_buffer);
+
+        if(!send_packet(&client->clnt_sock, send_buffer, sizeof(send_buffer))) {
+            fputs("failed to send to client", stderr);
+            break;
+        }
+
+
+        /*
+
+        not in use for now
 
         int enc_len = encrypt_packet(send_buffer, client->key, client->iv, ciphertext, tag);
         if(enc_len <= 0) {
@@ -125,30 +128,31 @@ void* client_main(void* args){
             fputs("failed to send to client", stderr);
             break;
         }
+        */
     }
 
     return NULL;
 
 } // client work
 
-void channel_send(struct one_way_channel* owc, const data_size full_data[PACKET_SIZE]){
+void channel_send(struct one_way_channel* owc, const unsigned char full_data[PACKET_MAX]){
     pthread_mutex_lock(&owc->mutex);
     while(owc->has_data) {
         pthread_cond_wait(&owc->cond, &owc->mutex);
     }
-    memcpy(owc->data, full_data, sizeof(data_size) * PACKET_SIZE);
+    memcpy(owc->data, full_data, sizeof(unsigned char) * PACKET_MAX);
     owc->has_data = 1;
     pthread_cond_signal(&owc->cond);
     pthread_mutex_unlock(&owc->mutex);
 } // send data to the parent process
 
-void channel_receive(struct one_way_channel* owc, data_size buffer[PACKET_SIZE]){
+void channel_receive(struct one_way_channel* owc, unsigned char buffer[PACKET_MAX]){
     pthread_mutex_lock(&owc->mutex);
     while(!owc->has_data) {
         pthread_cond_wait(&owc->cond, &owc->mutex);
     }
 
-    memcpy(buffer, owc->data, sizeof(data_size) * PACKET_SIZE);
+    memcpy(buffer, owc->data, sizeof(unsigned char) * PACKET_MAX);
     owc->has_data = 0;
 
     pthread_cond_signal(&owc->cond);

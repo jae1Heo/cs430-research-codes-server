@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
         frame_time = now - last_time;
         last_time = now;
 
-        packet_data client_data[MAX_CLIENTS][PACKET_SIZE];
+        unsigned char client_data[MAX_CLIENTS][PACKET_MAX];
 
         // Receive from clients
         for(int i = 0; i < MAX_CLIENTS; i++) {

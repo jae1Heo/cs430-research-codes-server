@@ -16,10 +16,18 @@ int init_server(struct sock* serv_sock, const unsigned short un_port) {
     serv_sock->sock_addr.sin_port = un_port;
     serv_sock->sock_len = sizeof(serv_sock->sock_addr);
 
+    int yes = 1;
+    if(!setsockopt(serv_sock->sock_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes))) {
+        perror("setsockopt() error");
+        return 0;
+    }
+
     if(bind(serv_sock->sock_fd, (struct sockaddr*)&serv_sock->sock_addr, serv_sock->sock_len) < 0) {
         perror("bind() error");
         return 0;
     }
+
+
 
     if(listen(serv_sock->sock_fd, 3) < 0) {
         perror("listen() error");
