@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
                 reset(&g_data);
                 // send client initial data 
                 // required = left_x, left_y, right_x, right_y, ball_x, ball_y, score_left, score_right, ball_vel_x, ball_vel_y
-
+                
                 g_data.game_status = 1;
             }
         }
