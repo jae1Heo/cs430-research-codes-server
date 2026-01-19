@@ -9,7 +9,6 @@ int main(int argc, char* argv[]) {
     pthread_t client_threads[MAX_CLIENTS];
     struct two_way_channel* channels[MAX_CLIENTS];
     struct client_info thread_args[MAX_CLIENTS];
-    int is_started = 0;
 
     // Hardcoded keys and IVs for 2 clients
     unsigned char hardcoded_keys[MAX_CLIENTS][AES_KEY_SIZE] = {
@@ -54,8 +53,21 @@ int main(int argc, char* argv[]) {
         // here, receive packet from the client 
     }
 
+    struct game_data g_data;
+    g_data.game_status = 0;
+
+    double accumulator = 0.0;
+    double last_time = time_now_sec();
+    unsigned long long tick = 0;
+    double now = 0.0f;
+    double frame_time = 0.0f;
+
     // Main game loop
     while(1) {
+        now = time_now_sec();
+        frame_time = now - last_time;
+        last_time = now;
+
         packet_data client_data[MAX_CLIENTS][PACKET_SIZE];
 
         // Receive from clients
@@ -69,15 +81,29 @@ int main(int argc, char* argv[]) {
         // server will then send the initial game data
         // when both client is there, the server will updated game data
         
-        if(!is_started) {
+        if(!g_data.game_status) {
             if(client_data[0][0] == 1 && client_data[1][0] == 1) {
-                is_started = 1;
+                g_data.left_score = 0;
+                g_data.right_score = 0;
+
+
+                // reset() x reset the score
+                reset(&g_data);
+                // send client initial data 
+                // required = left_x, left_y, right_x, right_y, ball_x, ball_y, score_left, score_right, ball_vel_x, ball_vel_y
+
+                g_data.game_status = 1;
             }
         }
         else {
             // Process game state
-            pack_data(client_data[0], client_data[1]);
+            // otherwise receive, [1 = w keyup 0 = down] [1 = s keyup 0 = down] [] [] 
+            // update client info with client data
+            // then send, left_y, right_y, ball_x, ball_y, score_left, score_right, game_status
+
+            // if game_status = reset -> call reset() and send back the game data to clients
             
+
             // Send updated state to clients
             for(int i = 0; i < MAX_CLIENTS; i++) {
                 channel_send(&channels[i]->response, client_data[i]);
