@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
         // when both client is there, the server will updated game data
         
         if(!g_data.game_status) {
-            if(client_data[0][0] == 1 && client_data[1][0] == 1) {
+            if(client_data[0] && client_data[1]) {
                 g_data.left_score = 0;
                 g_data.right_score = 0;
 
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
                 reset(&g_data);
                 // send client initial data 
                 // required = left_x, left_y, right_x, right_y, ball_x, ball_y, score_left, score_right, ball_vel_x, ball_vel_y
-                
+
                 g_data.game_status = 1;
             }
         }
