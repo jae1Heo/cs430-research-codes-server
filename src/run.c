@@ -67,6 +67,7 @@ int main(int argc, char* argv[]) {
         now = time_now_sec();
         frame_time = now - last_time;
         last_time = now;
+        g_data.server_time = frame_time;
 
         unsigned char client_data[MAX_CLIENTS][PACKET_MAX];
 
@@ -82,20 +83,45 @@ int main(int argc, char* argv[]) {
         // when both client is there, the server will updated game data
         
         if(!g_data.game_status) {
-            if(client_data[0] && client_data[1]) {
+            if(client_data[0][0] == 'j' && client_data[1][0] == 'j') {
                 g_data.left_score = 0;
                 g_data.right_score = 0;
-
-
+                
                 // reset() x reset the score
-                reset(&g_data);
-                // send client initial data 
-                // required = left_x, left_y, right_x, right_y, ball_x, ball_y, score_left, score_right, ball_vel_x, ball_vel_y
-
+                reset(&g_data); 
                 g_data.game_status = 1;
+
+                // assign side to each clients
+                for(int i = 0; i < MAX_CLIENTS; i++) {
+                    uint8_t side = i + 1;
+                    memcpy(client_data[i], &side, PACKET_MAX);
+                }
+
             }
         }
         else {
+
+            if(client_data[0][0] == 'a' && client_data[1][0] == 'a') {
+                
+                // pack updated data (init)
+                for(int i = 0; i < MAX_CLIENTS; i++) {
+                    pack_data(&g_data, client_data[i], PACKET_MAX);
+                }
+
+            }
+            else {
+                struct player_mv left_data;
+                struct player_mv right_data;
+
+                unpack_data(&left_data, client_data[0]);
+                unpack_data(&right_data, client_data[1]);
+
+                update(&g_data, left_data.player_w, left_data.player_s, right_data.player_w, right_data.player_s, g_data.server_time);
+
+                for(int i = 0; i < MAX_CLIENTS; i++) {
+                    pack_data(&g_data, client_data[i], PACKET_MAX);
+                }
+            }
             // Process game state
             // otherwise receive, [1 = w keyup 0 = down] [1 = s keyup 0 = down] [] [] 
             // update client info with client data
@@ -103,11 +129,11 @@ int main(int argc, char* argv[]) {
 
             // if game_status = reset -> call reset() and send back the game data to clients
             
+        }
 
-            // Send updated state to clients
-            for(int i = 0; i < MAX_CLIENTS; i++) {
-                channel_send(&channels[i]->response, client_data[i]);
-            }
+        // Send updated state to clients
+        for(int i = 0; i < MAX_CLIENTS; i++) {
+            channel_send(&channels[i]->response, client_data[i]);
         }
 
     }

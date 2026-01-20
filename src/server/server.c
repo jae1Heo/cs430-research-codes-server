@@ -59,7 +59,7 @@ int connect_client(struct sock* serv_sock, struct sock* clnt_sock) {
 
 int send_all(struct sock* clnt_sock, const void* buffer, size_t buffer_len) {
     size_t total_sent = 0;
-    uint8_t* partial = (const uint8_t*)buffer;
+    const unsigned char* partial = (const unsigned char*)buffer;
     
     while(total_sent < buffer_len) {
         ssize_t sent = send(clnt_sock->sock_fd, partial + total_sent, buffer_len - total_sent, 0);
@@ -74,7 +74,7 @@ int send_all(struct sock* clnt_sock, const void* buffer, size_t buffer_len) {
 
 int recv_all(struct sock* clnt_sock, void* buffer, size_t buffer_len) {
     size_t total_recv = 0;
-    uint8_t* partial = (uint8_t*)buffer;
+    const unsigned char* partial = (const unsigned char*)buffer;
 
     while(total_recv < buffer_len) {
         ssize_t recvd = recv(clnt_sock->sock_fd, partial + total_recv, buffer_len - total_recv, 0);

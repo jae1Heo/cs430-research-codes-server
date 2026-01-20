@@ -20,7 +20,6 @@ double time_now_sec() {
     clock_gettime(CLOCK_MONOTONIC, &ts);
 
     return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
-
 }
 
 void update(struct game_data* g_data, const unsigned int w_key_left, const unsigned int s_key_left, const unsigned int w_key_right, const unsigned int s_key_right, double delta) {
@@ -90,4 +89,21 @@ void update(struct game_data* g_data, const unsigned int w_key_left, const unsig
     }
 
 
+}
+
+int pack_data(struct game_data* g_data, char* buffer, size_t buffer_len) {
+    if(buffer_len < sizeof(*g_data)) {
+        fputs("pack limit exceeded", stderr);
+        return 0;
+    }
+    memcpy(buffer, g_data, sizeof(*g_data));
+    return 1;
+}
+
+void unpack_data(struct player_mv* p_data, const unsigned char* buffer) {
+    size_t offset = 0;
+    p_data->player_w = *(uint8_t*)(buffer + offset);
+    offset += sizeof(uint8_t);
+    p_data->player_s = *(uint8_t*)(buffer + offset);
+    offset += sizeof(uint8_t);
 }
