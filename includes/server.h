@@ -8,6 +8,12 @@
 #include <string.h>
 #include <unistd.h>
 
+enum {
+    GAME_WAIT = 0,
+    GAME_HANDSHAKE,
+    GAME_RUNNING
+};
+
 typedef struct sock{
     int sock_fd;
     struct sockaddr_in sock_addr;

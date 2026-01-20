@@ -59,7 +59,7 @@ typedef struct player_mv{
 void reset(struct game_data*);
 float time_now_sec();
 void run(struct game_data*);
-void update(struct game_data*, const unsigned int, const unsigned int, const unsigned int, const unsigned int, double, int*);
+void update(struct game_data*, const unsigned int, const unsigned int, const unsigned int, const unsigned int, double,int*);
 int pack_data(struct game_data*, char*, size_t);
 void unpack_data(struct player_mv*, const unsigned char*);
 

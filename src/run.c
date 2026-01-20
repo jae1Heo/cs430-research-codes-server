@@ -10,6 +10,7 @@ int main(int argc, char* argv[]) {
     struct two_way_channel* channels[MAX_CLIENTS];
     struct client_info thread_args[MAX_CLIENTS];
     int game_status = 0;
+    int running_status = GAME_WAIT;
 
     // Hardcoded keys and IVs for 2 clients
     unsigned char hardcoded_keys[MAX_CLIENTS][AES_KEY_SIZE] = {
@@ -76,34 +77,37 @@ int main(int argc, char* argv[]) {
             channel_receive(&channels[i]->command, client_data[i]);
         }
 
-
-        if(client_data[0][0] == 'j' && client_data[1][0] == 'j') {
-            g_data.left_score = 0;
-            g_data.right_score = 0;
+        if(running_status == GAME_WAIT) {
+            if(client_data[0][0] == 'j' && client_data[1][0] == 'j') {
             
-            // reset() x reset the score
-            reset(&g_data); 
-            //g_data.game_status = 1;
+                // reset() x reset the score
+                reset(&g_data); 
+                //g_data.game_status = 1;
 
-            // assign side to each clients
-            for(int i = 0; i < MAX_CLIENTS; i++) {
-                uint8_t side = i + 1;
-                memcpy(client_data[i], 0, PACKET_MAX);
-                client_data[i][0] = 's';
-                client_data[i][1] = side;
+                // assign side to each clients
+                for(int i = 0; i < MAX_CLIENTS; i++) {
+                    uint8_t side = i + 1;
+                    memset(client_data[i], 0, PACKET_MAX);
+                    client_data[i][0] = 's';
+                    client_data[i][1] = side;
+                }
+
+                running_status = GAME_HANDSHAKE;
             }
-
         }
-        else if(client_data[0][0] == 'a' && client_data[1][0] == 'a') {
+        else if(running_status == GAME_HANDSHAKE) {
+            if(client_data[0][0] == 'a' && client_data[1][0] == 'a') {
                 
-            // pack updated data (init)
-            for(int i = 0; i < MAX_CLIENTS; i++) {
-                pack_data(&g_data, client_data[i], PACKET_MAX);
+                // pack updated data (init)
+                for(int i = 0; i < MAX_CLIENTS; i++) {
+                    pack_data(&g_data, client_data[i], PACKET_MAX);
+                }
+                
+                running_status = GAME_RUNNING;
             }
-            game_status = 1;
-
         }
         else {
+            game_status = 1;
             struct player_mv left_data;
             struct player_mv right_data;
 
@@ -121,6 +125,7 @@ int main(int argc, char* argv[]) {
                 pack_data(&g_data, client_data[i], PACKET_MAX);
             }
         }
+
         // Process game state
         // otherwise receive, [1 = w keyup 0 = down] [1 = s keyup 0 = down] [] [] 
         // update client info with client data
