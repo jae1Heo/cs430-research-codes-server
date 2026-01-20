@@ -3,7 +3,7 @@
 #define PORT 12345
 
 int main(int argc, char* argv[]) {
-    
+    srand(time(NULL));
     struct sock server_sock;
     struct sock client_socks[MAX_CLIENTS];
     pthread_t client_threads[MAX_CLIENTS];
@@ -117,7 +117,11 @@ int main(int argc, char* argv[]) {
                 unpack_data(&left_data, client_data[0]);
                 unpack_data(&right_data, client_data[1]);
 
-                update(&g_data, left_data.player_w, left_data.player_s, right_data.player_w, right_data.player_s, g_data.server_time);
+                update(&g_data, left_data.player_w, left_data.player_s, right_data.player_w, right_data.player_s, frame_time);
+
+                if(!g_data.game_status) {
+                    reset(&g_data);
+                }
 
                 for(int i = 0; i < MAX_CLIENTS; i++) {
                     pack_data(&g_data, client_data[i], PACKET_MAX);
