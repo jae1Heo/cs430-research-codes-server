@@ -103,6 +103,7 @@ void* client_main(void* args){
             break;
         }
         
+        
         // send data to main process
         channel_send(&client->channel->command, recv_buffer);
         // rreceive data from the main process
