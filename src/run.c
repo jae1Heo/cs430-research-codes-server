@@ -67,7 +67,6 @@ int main(int argc, char* argv[]) {
         now = time_now_sec();
         frame_time = now - last_time;
         last_time = now;
-        g_data.server_time = frame_time;
 
         unsigned char client_data[MAX_CLIENTS][PACKET_MAX];
 
@@ -94,7 +93,9 @@ int main(int argc, char* argv[]) {
                 // assign side to each clients
                 for(int i = 0; i < MAX_CLIENTS; i++) {
                     uint8_t side = i + 1;
-                    memcpy(client_data[i], &side, PACKET_MAX);
+                    memcpy(client_data[i], 0, PACKET_MAX);
+                    client_data[i][0] = 's';
+                    client_data[i][1] = side;
                 }
 
             }

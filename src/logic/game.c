@@ -15,11 +15,11 @@ void reset(struct game_data* g_data) {
     g_data->right_paddle_y = (WINDOW_HEIGHT / 2) - (PADDLE_HEIGHT / 2);
 }
 
-double time_now_sec() {
+float time_now_sec() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
 
-    return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
+    return (float)ts.tv_sec + (float)ts.tv_nsec / 1e-9f;
 }
 
 void update(struct game_data* g_data, const unsigned int w_key_left, const unsigned int s_key_left, const unsigned int w_key_right, const unsigned int s_key_right, double delta) {
