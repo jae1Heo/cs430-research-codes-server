@@ -90,7 +90,7 @@ void update(struct game_data* g_data, const unsigned int w_key_left, const unsig
 
 }
 
-int pack_data(struct game_data* g_data, char* buffer, size_t buffer_len) {
+int pack_data(struct game_data* g_data, unsigned char* buffer, size_t buffer_len) {
     if(buffer_len < sizeof(*g_data)) {
         fputs("pack limit exceeded", stderr);
         return 0;

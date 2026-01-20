@@ -62,7 +62,7 @@ int send_all(struct sock* clnt_sock, const void* buffer, size_t buffer_len) {
     const unsigned char* partial = (const unsigned char*)buffer;
     
     while(total_sent < buffer_len) {
-        ssize_t sent = send(clnt_sock->sock_fd, partial + total_sent, buffer_len - total_sent, 0);
+        ssize_t sent = send(clnt_sock->sock_fd, (const unsigned char*)partial + total_sent, buffer_len - total_sent, 0);
         if(sent <= 0) {
             return 0;
         }
@@ -77,7 +77,7 @@ int recv_all(struct sock* clnt_sock, void* buffer, size_t buffer_len) {
     const unsigned char* partial = (const unsigned char*)buffer;
 
     while(total_recv < buffer_len) {
-        ssize_t recvd = recv(clnt_sock->sock_fd, partial + total_recv, buffer_len - total_recv, 0);
+        ssize_t recvd = recv(clnt_sock->sock_fd, (const unsigned char*)partial + total_recv, buffer_len - total_recv, 0);
         if(recvd <= 0) {
             return 0;
         }
