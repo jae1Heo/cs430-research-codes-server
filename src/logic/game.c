@@ -21,7 +21,7 @@ float time_now_sec() {
     return (float)ts.tv_sec + (float)ts.tv_nsec * 1e-9f;
 }
 
-void update(struct game_data* g_data, const unsigned int w_key_left, const unsigned int s_key_left, const unsigned int w_key_right, const unsigned int s_key_right, double delta) {
+void update(struct game_data* g_data, const unsigned int w_key_left, const unsigned int s_key_left, const unsigned int w_key_right, const unsigned int s_key_right, double delta, int* game_status) {
     // left side update
     if(w_key_left &&  g_data->left_paddle_y > 0) {
         g_data->left_paddle_y -= PADDLE_SPEED * delta;
@@ -79,12 +79,12 @@ void update(struct game_data* g_data, const unsigned int w_key_left, const unsig
     // check score 
     if(g_data->ball_pos_x <= 0) {
         g_data->right_score++;
-        //g_data->game_status = 0;
+        *game_status = 0;
     }
 
     if(g_data->ball_pos_x + BALL_SIZE >= WINDOW_WIDTH) {
         g_data->left_score++;
-        //g_data->game_status = 0;
+        *game_status = 0;
     }
 
 

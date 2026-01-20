@@ -46,7 +46,7 @@ typedef struct game_data{
     float right_paddle_x; // 32 bit -> 4 byte
 
     // 16 bit -> 2 byte
-    uint16_t game_status; //1 = running, else = not
+    //uint16_t game_status; //1 = running, else = not
 
 }data;
 
@@ -59,7 +59,7 @@ typedef struct player_mv{
 void reset(struct game_data*);
 float time_now_sec();
 void run(struct game_data*);
-void update(struct game_data*, const unsigned int, const unsigned int, const unsigned int, const unsigned int, double);
+void update(struct game_data*, const unsigned int, const unsigned int, const unsigned int, const unsigned int, double, int*);
 int pack_data(struct game_data*, char*, size_t);
 void unpack_data(struct player_mv*, const unsigned char*);
 
