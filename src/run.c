@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     struct game_data g_data;
     memset(&g_data, 0, sizeof(g_data));
 
-    double accumulator = 0.0;
+
     double last_time = time_now_sec();
     unsigned long long tick = 0;
     double now = 0.0f;
