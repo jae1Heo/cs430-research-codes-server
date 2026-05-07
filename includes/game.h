@@ -9,7 +9,6 @@
 #include <string.h>
 
 
-
 #define PACKET_INVALID 0xFFFF
 
 #define WINDOW_WIDTH 800
@@ -20,6 +19,7 @@
 #define PADDLE_SPEED 300.0f
 #define PADDLE_WIDTH 15.0f
 #define PADDLE_HEIGHT 90.0f
+#define PADDLE_WIDTH_MARGIN 20.0f
 #define BALL_SIZE 15.0f
 
 #define TICK_RATE 60.0f
@@ -32,7 +32,8 @@
 game data will be packed as packet_data variable and sent to the clients
 */
 
-
+#pragma pack(push, 1)
+// this will be sent to the client
 typedef struct game_data{
     uint16_t left_score; // 16 bit -> 2 byte
     uint16_t right_score; // 16 bit -> 2 byte
@@ -51,18 +52,23 @@ typedef struct game_data{
     //uint16_t game_status; //1 = running, else = not
 
 }data;
+#pragma pack(pop)
 
-typedef struct player_mv{
+#pragma pack(push, 1)
+// this will be received from the client
+typedef struct player_mv{ // struct for player movement
+    uint8_t player_status;
     uint8_t player_w;
     uint8_t player_s;
 }mv;
+#pragma pack(pop)
 
 
-void reset(struct game_data*);
-float time_now_sec();
-void run(struct game_data*);
-void update(struct game_data*, const unsigned int, const unsigned int, const unsigned int, const unsigned int, double,int*);
-int pack_data(struct game_data*, unsigned char*, size_t);
-void unpack_data(struct player_mv*, const unsigned char*);
+void reset(struct game_data*); // reset the game status
+float time_now_sec(); // return the current time in seconds
+void run(struct game_data*); // deprecated
+void update(struct game_data*, const unsigned int, const unsigned int, const unsigned int, const unsigned int, double,int*); // updates the game status
+int pack_data(struct game_data*, unsigned char*, size_t); // process the data in order to send it to the client
+void unpack_data(struct player_mv*, const unsigned char*); // process the packet in order to read the data from the client
 
 #endif 

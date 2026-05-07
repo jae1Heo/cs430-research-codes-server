@@ -14,13 +14,13 @@ enum {
     GAME_RUNNING
 };
 
-typedef struct sock{
+typedef struct sock{ // socket structure 
     int sock_fd;
     struct sockaddr_in sock_addr;
     socklen_t sock_len;
 }Sock;
 
-int init_server(struct sock*, const unsigned short);
+int init_server(struct sock*, const unsigned short); 
 int connect_client(struct sock*, struct sock*);
 int send_all(struct sock*, const void*, size_t);
 int recv_all(struct sock*, void*, size_t);
