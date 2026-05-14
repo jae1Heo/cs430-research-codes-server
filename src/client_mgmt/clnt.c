@@ -79,36 +79,36 @@ void* client_main(void* args){
     struct client_info* client = (struct client_info*)args; // initialize client info with argument from main thread 
     unsigned char recv_buffer[PACKET_MAX]; // initialize recv buffer 
     unsigned char send_buffer[PACKET_MAX]; // initialize send buffer
-    unsigned char ciphertext[PACKET_MAX * sizeof(unsigned char)]; // variable stores ciphered text
-    unsigned char tag[AES_GCM_TAG_SIZE]; // variable stores tag 
+    unsigned char plaintext[PACKET_MAX];
+    unsigned char ciphertext[PACKET_MAX];
     uint16_t p_len; // length of the packet
+
+    memset(recv_buffer, 0, PACKET_MAX);
+    memset(send_buffer, 0, PACKET_MAX);
+    memset(plaintext, 0, PACKET_MAX);
+    memset(ciphertext, 0, PACKET_MAX);
 
     while(1) {
         
-        /*
-        
-        not in use for now
-
-        if(!recv_packet(&client->clnt_sock, ciphertext, &p_len)) {
-            fputs("client disconnected", stderr);
-            break;
-        }
-
-        if(decrypt_packet(ciphertext, p_len, client->key, client->iv, tag, recv_buffer) <= 0) {
-            fputs("decryption failed", stderr);
-            break;
-        }
-        */
         if(!recv_packet(&client->clnt_sock, recv_buffer, &p_len)) {
             fputs("client disconnected", stderr);
             break;
         }
-        
+
+        if(!aes_decrypt(recv_buffer, p_len, plaintext)) {
+            fputs("packet decryption failed\n", stderr);
+            break;
+        }
         
         // send data to main process
         channel_send(&client->channel->command, recv_buffer);
         // rreceive data from the main process
         channel_receive(&client->channel->response, send_buffer);
+
+        if(!aes_encrypt(send_buffer, sizeof(struct game_data), ciphertext)) {
+            fputs("failed to encrypt packet\n", stderr);
+            break;
+        }
 
         if(!send_packet(&client->clnt_sock, send_buffer, sizeof(send_buffer))) {
             fputs("failed to send to client", stderr);
@@ -116,21 +116,10 @@ void* client_main(void* args){
         }
 
 
-        /*
-
-        not in use for now
-
-        int enc_len = encrypt_packet(send_buffer, client->key, client->iv, ciphertext, tag);
-        if(enc_len <= 0) {
-            fputs("encryption failed", stderr);
-            continue;
-        }
-
-        if(!send_packet(&client->clnt_sock, ciphertext, enc_len)) {
-            fputs("failed to send to client", stderr);
-            break;
-        }
-        */
+        memset(recv_buffer, 0, PACKET_MAX);
+        memset(send_buffer, 0, PACKET_MAX);
+        memset(plaintext, 0, PACKET_MAX);
+        memset(ciphertext, 0, PACKET_MAX);
     }
 
     return NULL;

@@ -26,6 +26,7 @@ int send_all(struct sock*, const void*, size_t);
 int recv_all(struct sock*, void*, size_t);
 int send_packet(struct sock*, const void*, uint16_t);
 int recv_packet(struct sock*, void*, uint16_t*);
+void close_sock(struct sock*);
 
 
 #endif 

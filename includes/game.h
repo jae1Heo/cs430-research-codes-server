@@ -25,8 +25,7 @@
 #define TICK_RATE 60.0f
 #define TICK_DT (1.0f / TICK_RATE)
 
-#define RAW_PACKET_SIZE 9
-#define PACKET_MAX 256
+#define PACKET_MAX 64
 
 /*
 game data will be packed as packet_data variable and sent to the clients
@@ -52,9 +51,7 @@ typedef struct game_data{
     //uint16_t game_status; //1 = running, else = not
 
 }data;
-#pragma pack(pop)
 
-#pragma pack(push, 1)
 // this will be received from the client
 typedef struct player_mv{ // struct for player movement
     uint8_t player_status;
@@ -67,7 +64,7 @@ typedef struct player_mv{ // struct for player movement
 void reset(struct game_data*); // reset the game status
 float time_now_sec(); // return the current time in seconds
 void run(struct game_data*); // deprecated
-void update(struct game_data*, const unsigned int, const unsigned int, const unsigned int, const unsigned int, double,int*); // updates the game status
+void update(struct game_data*, const unsigned int, const unsigned int, const unsigned int, const unsigned int, float,int*); // updates the game status
 int pack_data(struct game_data*, unsigned char*, size_t); // process the data in order to send it to the client
 void unpack_data(struct player_mv*, const unsigned char*); // process the packet in order to read the data from the client
 

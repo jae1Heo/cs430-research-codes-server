@@ -31,9 +31,7 @@ typedef struct two_way_channel { // struct for bi-directional mutex channel
 typedef struct client_info{ // struct for holding client information
     struct sock clnt_sock;
     struct two_way_channel* channel;
-    int clinet_id;
-    unsigned char key[AES_KEY_SIZE];
-    unsigned char iv[AES_GCM_IV_SIZE];
+    int client_id;
 } client_info_t;
 
 int init_channel(struct one_way_channel*); // initialize one way mutex

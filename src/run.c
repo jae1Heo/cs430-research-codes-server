@@ -2,6 +2,7 @@
 
 #define PORT 12345
 
+
 int main(int argc, char* argv[]) {
     // variables initialization
     srand(time(NULL)); 
@@ -12,20 +13,6 @@ int main(int argc, char* argv[]) {
     struct client_info thread_args[MAX_CLIENTS]; // thread information for each client
     int game_status = 0; // game status
     int running_status = GAME_WAIT; // running status
-
-    // Hardcoded keys and IVs for 2 clients
-    // deprecated 
-    unsigned char hardcoded_keys[MAX_CLIENTS][AES_KEY_SIZE] = {
-        {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,
-         0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F},
-        {0xFF,0xFE,0xFD,0xFC,0xFB,0xFA,0xF9,0xF8,0xF7,0xF6,0xF5,0xF4,0xF3,0xF2,0xF1,0xF0,
-         0xEF,0xEE,0xED,0xEC,0xEB,0xEA,0xE9,0xE8,0xE7,0xE6,0xE5,0xE4,0xE3,0xE2,0xE1,0xE0}
-    };
-
-    unsigned char hardcoded_ivs[MAX_CLIENTS][AES_GCM_IV_SIZE] = {
-        {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B},
-        {0xFF,0xFE,0xFD,0xFC,0xFB,0xFA,0xF9,0xF8,0xF7,0xF6,0xF5,0xF4}
-    };
 
     // initializing server socket
     if(!init_server(&server_sock, htons(PORT))) {
@@ -50,14 +37,9 @@ int main(int argc, char* argv[]) {
         }
 
         // initializing thread for each client
-        thread_args[i].clinet_id = i + 1;
+        thread_args[i].client_id = i + 1;
         thread_args[i].clnt_sock = client_socks[i];
         thread_args[i].channel = channels[i];
-
-        // use hardcoded keys and IVs instead of generating
-        // deprecated
-        memcpy(thread_args[i].key, hardcoded_keys[i], AES_KEY_SIZE);
-        memcpy(thread_args[i].iv, hardcoded_ivs[i], AES_GCM_IV_SIZE);
 
         // create thread for connected client
         pthread_create(&client_threads[i], NULL, client_main, &thread_args[i]);
@@ -73,15 +55,15 @@ int main(int argc, char* argv[]) {
     struct player_mv right_data; // side = 2
 
     // initializng clock cycle
-    double last_time = time_now_sec();
+    float last_time = time_now_sec();
     unsigned long long tick = 0;
-    double now = 0.0f;
-    double frame_time = 0.0f;
+    float now = 0.0f;
+    float frame_time = 0.0f;
 
     // initializng packet container for each client
     unsigned char client_data[MAX_CLIENTS][PACKET_MAX];
-
-    // main game loop
+    reset(&g_data); 
+    
     while(1) {
         now = time_now_sec();
         frame_time = now - last_time;
@@ -91,33 +73,31 @@ int main(int argc, char* argv[]) {
         for(int i = 0; i < MAX_CLIENTS; i++) {
             channel_receive(&channels[i]->command, client_data[i]);
         }
+        
+        //game status will be GAME_WAIT until two clients sends ready sign
 
-        /*
-        game status will be GAME_WAIT until two clients sends ready sign
-
-        */
         if(running_status == GAME_WAIT) {
             // clients will send 'j' as ready sign
             if(client_data[0][0] == 'j' && client_data[1][0] == 'j') {
                 // reset() x reset the score
-                reset(&g_data); 
+                // g_data reset before the game starts
                 //g_data.game_status = 1;
 
                 // assign side to each clients
                 for(int i = 0; i < MAX_CLIENTS; i++) {
-                    /*
-                    variable side will determine which side for each client to play
-                    1 will be left, and 2 will be right
-                    */
+                    
+                    //variable side will determine which side for each client to play
+                    //1 will be left, and 2 will be right
+                    
                     uint8_t side = i + 1;
                     memset(client_data[i], 0, PACKET_MAX);
                     client_data[i][0] = 's';
                     client_data[i][1] = side;
                 }
-                /*
-                there will be a transition in game state
-                after each client receive packet with 's', each client will intiate handshaking
-                */
+                
+                //there will be a transition in game state
+                //after each client receive packet with 's', each client will intiate handshaking
+                
                 running_status = GAME_HANDSHAKE;
             }
         }
@@ -178,76 +158,7 @@ int main(int argc, char* argv[]) {
         }
         
     }
-
-
-        // clients will send 1 and if there are two 1, then start the game.
-        // first, client will send "0" after connection.
-        // server will then send the initial game data
-        // when both client is there, the server will updated game data
-        /*
-        if(!g_data.game_status) {
-            if(client_data[0][0] == 'j' && client_data[1][0] == 'j') {
-                g_data.left_score = 0;
-                g_data.right_score = 0;
-                
-                // reset() x reset the score
-                reset(&g_data); 
-                //g_data.game_status = 1;
-
-                // assign side to each clients
-                for(int i = 0; i < MAX_CLIENTS; i++) {
-                    uint8_t side = i + 1;
-                    memcpy(client_data[i], 0, PACKET_MAX);
-                    client_data[i][0] = 's';
-                    client_data[i][1] = side;
-                }
-
-            }
-        }
-        else {
-
-            if(client_data[0][0] == 'a' && client_data[1][0] == 'a') {
-                
-                // pack updated data (init)
-                for(int i = 0; i < MAX_CLIENTS; i++) {
-                    pack_data(&g_data, client_data[i], PACKET_MAX);
-                }
-
-            }
-            else {
-                struct player_mv left_data;
-                struct player_mv right_data;
-
-                unpack_data(&left_data, client_data[0]);
-                unpack_data(&right_data, client_data[1]);
-
-                update(&g_data, left_data.player_w, left_data.player_s, right_data.player_w, right_data.player_s, frame_time);
-
-                if(!g_data.game_status) {
-                    reset(&g_data);
-                }
-
-                for(int i = 0; i < MAX_CLIENTS; i++) {
-                    pack_data(&g_data, client_data[i], PACKET_MAX);
-                }
-            }
-            // Process game state
-            // otherwise receive, [1 = w keyup 0 = down] [1 = s keyup 0 = down] [] [] 
-            // update client info with client data
-            // then send, left_y, right_y, ball_x, ball_y, score_left, score_right, game_status
-
-            // if game_status = reset -> call reset() and send back the game data to clients
-            
-        }
-
-        // Send updated state to clients
-        for(int i = 0; i < MAX_CLIENTS; i++) {
-            channel_send(&channels[i]->response, client_data[i]);
-        }
-
-    }
-
-    */
+    
 
     // cleanup (never reached in current infinite loop)
     /*
@@ -257,6 +168,7 @@ int main(int argc, char* argv[]) {
     for(int i = 0; i < MAX_CLIENTS; i++) {
         pthread_join(client_threads[i], NULL);
         close_twoway(channels[i]);
+        close_sock(&client_socks[i]);
     }
 
     return 0;

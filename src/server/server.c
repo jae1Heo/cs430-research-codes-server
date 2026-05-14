@@ -20,15 +20,6 @@ int init_server(struct sock* serv_sock, const unsigned short un_port) {
     serv_sock->sock_addr.sin_port = un_port; // open for un_port port number (currently 12345)
     serv_sock->sock_len = sizeof(serv_sock->sock_addr); // size of address struct
 
-    // this one makes the socket reuseable
-    /*
-    int yes = 1;
-    if(setsockopt(serv_sock->sock_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) != 0) {
-        perror("setsockopt() error");
-        return 0;
-    }
-    */
-
     // bind the server socket
     if(bind(serv_sock->sock_fd, (struct sockaddr*)&serv_sock->sock_addr, serv_sock->sock_len) < 0) {
         perror("bind() error");
@@ -136,4 +127,8 @@ int recv_packet(struct sock* clnt_sock, void* buffer, uint16_t* packet_len) {
     fputs("packet received\n", stdout);
 
     return 1;
+}
+
+void close_sock(struct sock* sk) {
+    close(sk->sock_fd);
 }

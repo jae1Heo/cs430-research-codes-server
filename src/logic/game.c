@@ -1,19 +1,18 @@
 #include "../../includes/game.h"
 
-
 // reset the game status
 void reset(struct game_data* g_data) {
     // set the position of the ball at the center of the screen
-    g_data->ball_pos_x = (WINDOW_WIDTH / 2)  - (BALL_SIZE / 2);
-    g_data->ball_pos_y = (WINDOW_HEIGHT / 2) - (BALL_SIZE / 2);
+    g_data->ball_pos_x = (WINDOW_WIDTH / 2.0f)  - (BALL_SIZE / 2.0f);
+    g_data->ball_pos_y = (WINDOW_HEIGHT / 2.0f) - (BALL_SIZE / 2.0f);
     
     // randomize the initial speed of the ball
     g_data->ball_vel_x = (rand() % 2 == 0) ? BALL_SPEED : -BALL_SPEED;
     g_data->ball_vel_y = (rand() % 2 == 0) ? BALL_SPEED : -BALL_SPEED;
 
     // reset the location of paddles
-    g_data->left_paddle_y = (WINDOW_HEIGHT / 2) - (PADDLE_HEIGHT / 2);
-    g_data->right_paddle_y = (WINDOW_HEIGHT / 2) - (PADDLE_HEIGHT / 2);
+    g_data->left_paddle_y = (WINDOW_HEIGHT / 2.0f) - (PADDLE_HEIGHT / 2.0f);
+    g_data->right_paddle_y = (WINDOW_HEIGHT / 2.0f) - (PADDLE_HEIGHT / 2.0f);
 
     g_data->left_paddle_x = PADDLE_WIDTH_MARGIN;
     g_data->right_paddle_x = WINDOW_WIDTH - PADDLE_WIDTH_MARGIN - PADDLE_WIDTH;
@@ -28,7 +27,7 @@ float time_now_sec() {
 }
 
 // update the game status
-void update(struct game_data* g_data, const unsigned int w_key_left, const unsigned int s_key_left, const unsigned int w_key_right, const unsigned int s_key_right, double delta, int* game_status) {
+void update(struct game_data* g_data, const unsigned int w_key_left, const unsigned int s_key_left, const unsigned int w_key_right, const unsigned int s_key_right, float delta, int* game_status) {
     // left side update
     // if the left side w key is pressed, move the left side paddle upward
     if(w_key_left &&  g_data->left_paddle_y > 0) {
@@ -52,15 +51,6 @@ void update(struct game_data* g_data, const unsigned int w_key_left, const unsig
     // ball position update
     g_data->ball_pos_x += g_data->ball_vel_x * delta;
     g_data->ball_pos_y += g_data->ball_vel_y * delta;
-
-
-    
-    /*
-    // deprecated, this makes the ball moves weird
-    if(g_data->ball_pos_y <= 0 || g_data->ball_pos_y + BALL_SIZE >= WINDOW_HEIGHT) {
-        g_data->ball_vel_y = g_data->ball_vel_y * -1;
-    }
-    */
 
 
     // check if ball overlaps the paddles vertically
@@ -109,7 +99,6 @@ void update(struct game_data* g_data, const unsigned int w_key_left, const unsig
         g_data->left_score++;
         *game_status = 0;
     }
-
 
 }
 
