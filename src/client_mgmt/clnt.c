@@ -105,7 +105,8 @@ void* client_main(void* args){
         // rreceive data from the main process
         channel_receive(&client->channel->response, send_buffer);
 
-        if(!aes_encrypt(send_buffer, sizeof(struct game_data), ciphertext)) {
+        int cipherlen = aes_encrypt(send_buffer, sizeof(struct game_data), ciphertext);
+        if(cipherlen < 0) {
             fputs("failed to encrypt packet\n", stderr);
             break;
         }

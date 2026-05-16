@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
     // initializng packet container for each client
     unsigned char client_data[MAX_CLIENTS][PACKET_MAX];
-    reset(&g_data); 
+    int init_flag = 1;
     
     while(1) {
         now = time_now_sec();
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
         else if(running_status == GAME_HANDSHAKE) {
             // when both client is ready for handshaking, will send pakcet with 'a'
             if(client_data[0][0] == 'a' && client_data[1][0] == 'a') {
-                
+                reset(&g_data); 
                 // pack updated data (init)
                 for(int i = 0; i < MAX_CLIENTS; i++) {
                     pack_data(&g_data, client_data[i], PACKET_MAX);
@@ -121,11 +121,16 @@ int main(int argc, char* argv[]) {
                 //struct player_mv left_data;  // side = 1
                 //struct player_mv right_data; // side = 2
 
-                unpack_data(&left_data, client_data[0]); // unpack the data from left side client
-                unpack_data(&right_data, client_data[1]); // unpack the data from right side client
-
-                // update the game status as received packet from each client
-                update(&g_data, left_data.player_w, left_data.player_s, right_data.player_w, right_data.player_s, frame_time, &game_status);
+                if(init_flag) {
+                    init_flag = false;
+                }
+                else {
+                    unpack_data(&left_data, client_data[0]); // unpack the data from left side client
+                    unpack_data(&right_data, client_data[1]); // unpack the data from right side client
+                
+                    // update the game status as received packet from each client
+                    update(&g_data, left_data.player_w, left_data.player_s, right_data.player_w, right_data.player_s, frame_time, &game_status);
+                }
 
                 // here, update() will set the game_status to 0 if game is set or one client made a point
                 if(!game_status) {
@@ -156,6 +161,14 @@ int main(int argc, char* argv[]) {
         for(int i = 0; i < MAX_CLIENTS; i++) {
             memset((void*)client_data[i], 0, PACKET_MAX);
         }
+
+        usleep(8333); 
+        // formula
+        // T = Time period for one frame in second(s)
+        // f = Frequency in Hertz
+        // T = 1/f
+        // f = 1/T
+        // T = 1/120 = 0.008333~ so 8.333 milliseconds will catch up 120 FPS. 
         
     }
     

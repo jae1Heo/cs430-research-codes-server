@@ -12,6 +12,7 @@ CFLAGS = -I/opt/homebrew/opt/openssl@3/include
 SRCS = src/run.c src/server/server.c src/logic/game.c src/client_mgmt/clnt.c src/auth/auth.c
 
 # The build rule
+# change this to $(CC) -o $(EXE) $(SRCS) $(LDFLAGS)
 all:
 	$(CC) -o $(EXE) $(SRCS) $(CFLAGS) $(LDFLAGS)
 
