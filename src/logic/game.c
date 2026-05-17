@@ -28,30 +28,9 @@ float time_now_sec() {
 
 // update the game status
 void update(struct game_data* g_data, const unsigned int w_key_left, const unsigned int s_key_left, const unsigned int w_key_right, const unsigned int s_key_right, float delta, int* game_status) {
-    // left side update
-    // if the left side w key is pressed, move the left side paddle upward
-    if(w_key_left &&  g_data->left_paddle_y > 0) {
-        g_data->left_paddle_y -= PADDLE_SPEED * delta;
-    }
-    // if the left side s key is pressed, move the left side paddle downward
-    else if(s_key_left && g_data->left_paddle_y < WINDOW_HEIGHT - PADDLE_HEIGHT) {
-        g_data->left_paddle_y += PADDLE_SPEED * delta;
-    } 
-
-    // right side update
-    // if the right side w key is pressed, move the right side paddle upward
-    if(w_key_right && g_data->right_paddle_y > 0) {
-        g_data->right_paddle_y -= PADDLE_SPEED * delta;
-    }
-    // if the right side s key is pressed, move the right side paddle downward
-    else if(s_key_right && g_data->right_paddle_y < WINDOW_HEIGHT - PADDLE_HEIGHT) {
-        g_data->right_paddle_y += PADDLE_SPEED * delta;
-    }
-
     // ball position update
     g_data->ball_pos_x += g_data->ball_vel_x * delta;
     g_data->ball_pos_y += g_data->ball_vel_y * delta;
-
 
     // check if ball overlaps the paddles vertically
     // flags that checks if the ball's position is overlapping with the 
@@ -86,6 +65,30 @@ void update(struct game_data* g_data, const unsigned int w_key_left, const unsig
         g_data->ball_vel_x = g_data->ball_vel_x * -1;
     }
 
+    // check if ball overlaps the window's boundaries (vertically)
+    if(g_data->ball_pos_y <= 0 || g_data->ball_pos_y + BALL_SIZE >= WINDOW_HEIGHT) {
+        g_data->ball_vel_y = g_data->ball_vel_y * -1;
+    }
+
+    // left side update
+    // if the left side w key is pressed, move the left side paddle upward
+    if(w_key_left &&  g_data->left_paddle_y > 0) {
+        g_data->left_paddle_y -= PADDLE_SPEED * delta;
+    }
+    // if the left side s key is pressed, move the left side paddle downward
+    else if(s_key_left && g_data->left_paddle_y < WINDOW_HEIGHT - PADDLE_HEIGHT) {
+        g_data->left_paddle_y += PADDLE_SPEED * delta;
+    } 
+
+    // right side update
+    // if the right side w key is pressed, move the right side paddle upward
+    if(w_key_right && g_data->right_paddle_y > 0) {
+        g_data->right_paddle_y -= PADDLE_SPEED * delta;
+    }
+    // if the right side s key is pressed, move the right side paddle downward
+    else if(s_key_right && g_data->right_paddle_y < WINDOW_HEIGHT - PADDLE_HEIGHT) {
+        g_data->right_paddle_y += PADDLE_SPEED * delta;
+    }
 
     // check score 
     // checks if the right side made a score
