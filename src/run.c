@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
                 reset(&g_data); 
                 // pack updated data (init)
                 for(int i = 0; i < MAX_CLIENTS; i++) {
-                    pack_data(&g_data, client_data[i], PACKET_MAX);
+                    pack_data(&g_data, client_data[i], sizeof(struct game_data));
                 }
                 running_status = GAME_RUNNING;
             }
@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
 
                 // pack the updated data as formatted packet
                 for(int i = 0; i < MAX_CLIENTS; i++) {
-                    pack_data(&g_data, client_data[i], PACKET_MAX);
+                    pack_data(&g_data, client_data[i], sizeof(struct game_data));
                 }
 
             }

@@ -111,7 +111,7 @@ void* client_main(void* args){
             break;
         }
 
-        if(!send_packet(&client->clnt_sock, send_buffer, sizeof(send_buffer))) {
+        if(!send_packet(&client->clnt_sock, send_buffer, cipherlen)) {
             fputs("failed to send to client", stderr);
             break;
         }

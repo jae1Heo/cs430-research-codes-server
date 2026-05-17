@@ -124,8 +124,6 @@ int recv_packet(struct sock* clnt_sock, void* buffer, uint16_t* packet_len) {
         *packet_len = data_len;
     }
 
-    fputs("packet received\n", stdout);
-
     return 1;
 }
 
