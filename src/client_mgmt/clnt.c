@@ -89,7 +89,44 @@ void* client_main(void* args){
     memset(ciphertext, 0, PACKET_MAX);
 
     while(1) {
+
+        if(!recv_packet(&client->clnt_sock, recv_buffer, &p_len)) {
+            fputs("client disconnected", stderr);
+            break;
+        }
+
+        envelope env;
+        memset(&env, 0, sizeof(envelope));
+        memcpy(&env, recv_buffer, sizeof(envelope));
+
+        if(!resolve_envelope((const unsigned char*)&env, sizeof(env), plaintext)) {
+            fputs("failed to decrypt packet\n", stderr);
+            break;
+        }
+
+        channel_send(&client->channel->command, plaintext);
+
+        channel_receive(&client->channel->response, send_buffer);
+
+        memset(&env, 0, sizeof(envelope));
+        if(!build_envelope(&env, sizeof(struct game_data), send_buffer)) {
+            fputs("failed to encrypt packet\n", stderr);
+            break;
+        }
+
+        if(!send_packet(&client->clnt_sock, &env, (uint16_t)sizeof(envelope))) {
+            fputs("failed to send packet to client", stderr);
+            break;
+        }
+
+
+        memset(send_buffer, 0, PACKET_MAX);
+        memset(recv_buffer, 0, PACKET_MAX);
+        memset(plaintext, 0, PACKET_MAX);
+        memset(ciphertext, 0, PACKET_MAX);
+        p_len = 0;
         
+        /*
         if(!recv_packet(&client->clnt_sock, recv_buffer, &p_len)) {
             fputs("client disconnected", stderr);
             break;
@@ -121,6 +158,7 @@ void* client_main(void* args){
         memset(send_buffer, 0, PACKET_MAX);
         memset(plaintext, 0, PACKET_MAX);
         memset(ciphertext, 0, PACKET_MAX);
+        */
     }
 
     return NULL;

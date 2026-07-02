@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
                 //struct player_mv right_data; // side = 2
 
                 if(init_flag) {
-                    init_flag = false;
+                    init_flag = 0;
                 }
                 else {
                     unpack_data(&left_data, client_data[0]); // unpack the data from left side client
