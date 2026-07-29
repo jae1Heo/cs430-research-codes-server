@@ -3,6 +3,39 @@
 #include "../../includes/auth.h"
 
 // 2048-bit RSA Private Key (Keep this secret! Used for signing/decrypting)
+// server's private key
+
+char *PRIVATE_KEY = 
+"-----BEGIN PRIVATE KEY-----\n"
+"MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDIoMjSzyIrhT8U\n"
+"E1JsllX12+nHFFAJorBz9/doVAOsEsS2k+UpxuLwLTzKXbII99hhYSprwRV9VL4I\n"
+"gwlnDdL0gqKQrxQ6pdsbE+qG6wxKzJ8Dswk9ioaP/aKAm9D8udnUc1Eu3DqvHO2w\n"
+"01TIoW8xfrKN/osnSDulFYQ8XCtjxCSUL65eqQNfp+25unshEfPK7Fr9jrRJkt4Q\n"
+"5ADHIOgEZ9c1oQuXJ/5zbOuLitt4xdawc/dgOwA873qE8VWTAAl1s7NbCjqJEgtB\n"
+"wlaft77i2wTVMbo2ykoJZVKtme3xEBKBmI2/kGV2iaNL4kGCRySOiPwK2ofyxSNp\n"
+"lAfOwbvRAgMBAAECggEACq1R2rQ2yZGjCH65v3kltHqiX5ujYcvkb5uF8WmtM1ph\n"
+"WSUYSEejGqyRpGRlnegQvif1YbwqGFwq69mLZc5cyHHuVFxY64EZnsCJ1enK4u0u\n"
+"VjxQNNP7Ms0I+aaxMc3zO4TykFeckOateKBajf3XZM8tEfT2s126/N9fBPZTwdCd\n"
+"f+ay0QVk+xOQpxgtaxAFtjK5momq8J1gvw2KQUBMb2i4x9irTU1yAitvCZmHXLZj\n"
+"YN8QSCElI9Y574SahOjscUchG1yseaJ1MMusMuJRJEzxtWi6hgfgFCMH+SaRFDYg\n"
+"6AgKFMM2ncDp6iHMhTSnrDym1YEh+4g36kMf9RVLMQKBgQD0aiWV0pclwxFIPb+n\n"
+"hbKxcsO0JhMX3j5oquwPLVicsY43tzyL7cLu/4BTlfq6UEhXTsATXWTLrs86rg6/\n"
+"ne9rhJn4rjVK8fgvjYQ3T85vvuMKi53i2Dz+sHgbX8jt0vYv67RezZ2XYlkFFOdU\n"
+"9DHDeLFkMNblMxfAa51o1vsfWQKBgQDSI08OrVdR7x+FKIlnmZQDcWUE68IKKvjB\n"
+"e3QhxCq1qiXHmggBDJhAkTJTlbwZSWRCfvA7fUqPknwW0+Qkjb2YJZN4nbDagHr/\n"
+"TX44FJW5KGcteeXCps2VoIUgiWVOYMUCCz5BRdwF9PTEO4Pp23PMcL4GyK0LF74D\n"
+"/u7Xw5apOQKBgQCvTv98chtlw3++4EN6hiRAsP98VJ73TLpY2tgMnsrjQVuvzOdJ\n"
+"upVKVcsWqQm432Kz9NFCUoe8rLsI7NW5TS/wX6EMxO+GvP32JbxC7CQ29KTm6HOr\n"
+"xMwjJjJP+CknpFxezOKH6VVywuD1CyRORAT5nrUmFv3cUgRkSQwTqbdfqQKBgQCE\n"
+"Kib4ATfxVWdKtcMuAJ7iR3iUzr787CgGcOIKtrlyBrC6SHuORWChA3FWts9WTB2d\n"
+"4P6xO80gXa5kISLVhrxfLAsDipKH6tTxK8kd9nxwtyOlq4xBj+2vlQUGAMRRtnVS\n"
+"IsYmAY0vxfAIV7JQ7HB5fdNWqvKDDoy5MKcB14czqQKBgBwYMsWebSY5WbebTsiV\n"
+"mW47jcD4JDvFKNickC3m1IxnrtMhym975ZTfXRO6dnGjMPt3dD34gYvc9re2m55O\n"
+"gkoyzTy0FML3PJeXjtAJQKZwbF3DXJFZ6/CkNKIfReRRPzd36tl0+q88U58SWDow\n"
+"b8kuQk6ORgEx9D+niCgLUpCU\n"
+"-----END PRIVATE KEY-----\n";
+
+/*
 char *PRIVATE_KEY = 
 "-----BEGIN PRIVATE KEY-----\n"
 "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC3eRnLF1pYovxp\n"
@@ -32,8 +65,23 @@ char *PRIVATE_KEY =
 "iDmQ9qGxcEyPd4Gi9+ekgS9E9XXHtoJCxpxhtWp19Hjc6SsceKQ4aRpx3gO4+slZ\n"
 "oEIPo7CMm/V+FXzV97UsQc0=\n"
 "-----END PRIVATE KEY-----\n";
+*/
 
 // 2048-bit RSA Public Key (Share this! Used for verifying/encrypting)
+// client's public key
+
+char *PUBLIC_KEY = 
+"-----BEGIN PUBLIC KEY-----\n"
+"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2weS8Q9xGNH6KP9CCyrP\n"
+"xNsCWvPizs/heKDT4zXtz/J3Gf3cW6Xe/3nwhchvKR5yX/m6WGGKth4mEBI2G/Xc\n"
+"kfWR28KrVRoZVcjtnCKyuQtjGECcAvmFPdHY2Uo3tttkSEhaRDnR+ujMXw0TKt2t\n"
+"FUV4UBxUD/suv5vepgRk2CunSlFIsm0b5+fHC/C7QBfUTqcdWwcm1clHUG3x7oY8\n"
+"XGudko8nUKaD2EwJSoagW3dJIFWgzOM+1I74S3hvpOGriXdzwnm7o9rql/Ljb1kl\n"
+"Ffx7m8n9jQjfcCJzXhLuz7o5KNh3oi5FEwx4OWtA8taFGGGsOfYl1NbtAA6Pu/eY\n"
+"xQIDAQAB\n"
+"-----END PUBLIC KEY-----\n";
+
+/*
 char *PUBLIC_KEY = 
 "-----BEGIN PUBLIC KEY-----\n"
 "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3kZyxdaWKL8afv/Tyxf\n"
@@ -44,6 +92,7 @@ char *PUBLIC_KEY =
 "00dWYS5IYaR2E5GRdFI7awaYbU8fvbwXqbEcAJa4AXE0yk3QU4y3pL7SrjeGV73V\n"
 "9wIDAQAB\n"
 "-----END PUBLIC KEY-----\n";
+*/
 
 
 int generate_iv(unsigned char* iv_buffer) {
@@ -389,49 +438,3 @@ int resolve_envelope(const unsigned char* encrypted_envelope, const size_t encry
     free(plaintext);
     return 1;
 }
-
-
-/*
-int aes_encrypt(unsigned char* plaintext, int plaintext_len, unsigned char* ciphertext) {
-    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    int len;
-    int ciphertext_len;
-
-    EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, TEST_KEY, TEST_IV);
-
-    // encrypt blocks
-    EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len);
-    ciphertext_len = len;
-
-    // add PKCS#7 padding
-    EVP_EncryptFinal_ex(ctx, ciphertext + len, &len);
-    ciphertext_len += len;
-
-    EVP_CIPHER_CTX_free(ctx);
-
-    return ciphertext_len;
-}
-
-int aes_decrypt(unsigned char* ciphertext, int ciphertext_len, unsigned char* plaintext) {
-    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    int len;
-    int plaintext_len;
-
-    EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, TEST_KEY, TEST_IV);
-
-    // decrypt blocks
-    EVP_DecryptUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len);
-    plaintext_len = len;
-
-    // remove PKCS#7 padding
-    // will fail if key/iv is different
-    if(EVP_DecryptFinal_ex(ctx, plaintext + len, &len) <= 0) {
-        return -1;
-    }
-    plaintext_len += len;
-
-    EVP_CIPHER_CTX_free(ctx);
-    return plaintext_len;
-
-}
-*/

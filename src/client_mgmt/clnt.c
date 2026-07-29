@@ -109,7 +109,7 @@ void* client_main(void* args){
         channel_receive(&client->channel->response, send_buffer);
 
         memset(&env, 0, sizeof(envelope));
-        if(!build_envelope(&env, sizeof(struct game_data), send_buffer)) {
+        if(!build_envelope(send_buffer, sizeof(struct game_data), &env)) {
             fputs("failed to encrypt packet\n", stderr);
             break;
         }
