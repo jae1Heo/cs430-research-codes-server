@@ -45,7 +45,6 @@ typedef struct {
 EVP_PKEY* load_private_key(const char*);
 EVP_PKEY* load_public_key(const char*);
 int aes_encrypt(unsigned char*, int, unsigned char*, unsigned char*, unsigned char*);
-int generate_iv(unsigned char*);
 int rsa_encrypt_aes_key(const unsigned char*, const unsigned char*, size_t, unsigned char*, size_t*);
 int generate_signed_hash(const unsigned char*, envelope*);
 int build_envelope(unsigned char*, int, envelope*);

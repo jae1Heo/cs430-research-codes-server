@@ -94,17 +94,6 @@ char *PUBLIC_KEY =
 "-----END PUBLIC KEY-----\n";
 */
 
-
-int generate_iv(unsigned char* iv_buffer) {
-    memset(iv_buffer, 0, IV_SIZE);
-
-    // generate random 16 bytes for IV
-    if(RAND_bytes(iv_buffer, IV_SIZE) != 1) {
-        return 0;
-    }
-    return 1;
-}
-
 int aes_encrypt(unsigned char* plaintext, int plaintext_len, unsigned char* iv, unsigned char* key, unsigned char* ciphertext) {
     // allocate new cipher context
     EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
@@ -169,6 +158,12 @@ int rsa_encrypt_aes_key(const unsigned char* public_key, const unsigned char* sy
     if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0) {
         EVP_PKEY_CTX_free(ctx);
         EVP_PKEY_free(pubKey);
+        return 0;
+    }
+
+    if(EVP_PKEY_CTX_set_rsa_oaep_md(ctx, EVP_sha256()) <= 0) {
+        EVP_PKEY_free(pubKey);
+        EVP_PKEY_CTX_free(ctx);
         return 0;
     }
 
@@ -241,9 +236,7 @@ int generate_signed_hash(const unsigned char* private_key, envelope* env) {
 int build_envelope(unsigned char* plaintext, int plaintext_len, envelope* packet_buffer) {
     // generate IV first
     unsigned char dynamic_iv[IV_SIZE];
-    if(!generate_iv(dynamic_iv)) {
-        return 0;
-    }
+    memcpy(dynamic_iv, TEST_IV, IV_SIZE);
     memcpy(packet_buffer->iv, dynamic_iv, IV_SIZE);
 
     unsigned char symkey_buffer[SYMKEY_SIZE];
@@ -345,6 +338,12 @@ int rsa_decrypt_aes_key(const unsigned char* private_key, const unsigned char* e
     }
 
     if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0) {
+        EVP_PKEY_free(priv_key);
+        EVP_PKEY_CTX_free(ctx);
+        return 0;
+    }
+
+    if(EVP_PKEY_CTX_set_rsa_oaep_md(ctx, EVP_sha256()) <= 0) {
         EVP_PKEY_free(priv_key);
         EVP_PKEY_CTX_free(ctx);
         return 0;

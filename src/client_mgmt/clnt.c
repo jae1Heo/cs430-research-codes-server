@@ -77,14 +77,14 @@ void* client_main(void* args){
     
     // initialize variables 
     struct client_info* client = (struct client_info*)args; // initialize client info with argument from main thread 
-    unsigned char recv_buffer[PACKET_MAX]; // initialize recv buffer 
-    unsigned char send_buffer[PACKET_MAX]; // initialize send buffer
+    unsigned char recv_buffer[sizeof(envelope)]; // initialize recv buffer 
+    unsigned char send_buffer[sizeof(envelope)]; // initialize send buffer
     unsigned char plaintext[PACKET_MAX];
     unsigned char ciphertext[PACKET_MAX];
     uint16_t p_len; // length of the packet
 
-    memset(recv_buffer, 0, PACKET_MAX);
-    memset(send_buffer, 0, PACKET_MAX);
+    memset(recv_buffer, 0, sizeof(envelope));
+    memset(send_buffer, 0, sizeof(envelope));
     memset(plaintext, 0, PACKET_MAX);
     memset(ciphertext, 0, PACKET_MAX);
 
@@ -120,45 +120,12 @@ void* client_main(void* args){
         }
 
 
-        memset(send_buffer, 0, PACKET_MAX);
-        memset(recv_buffer, 0, PACKET_MAX);
+        memset(send_buffer, 0, sizeof(envelope));
+        memset(recv_buffer, 0, sizeof(envelope));
         memset(plaintext, 0, PACKET_MAX);
         memset(ciphertext, 0, PACKET_MAX);
         p_len = 0;
         
-        /*
-        if(!recv_packet(&client->clnt_sock, recv_buffer, &p_len)) {
-            fputs("client disconnected", stderr);
-            break;
-        }
-
-        if(!aes_decrypt(recv_buffer, p_len, plaintext)) {
-            fputs("packet decryption failed\n", stderr);
-            break;
-        }
-        
-        // send data to main process
-        channel_send(&client->channel->command, recv_buffer);
-        // rreceive data from the main process
-        channel_receive(&client->channel->response, send_buffer);
-
-        int cipherlen = aes_encrypt(send_buffer, sizeof(struct game_data), ciphertext);
-        if(cipherlen < 0) {
-            fputs("failed to encrypt packet\n", stderr);
-            break;
-        }
-
-        if(!send_packet(&client->clnt_sock, send_buffer, cipherlen)) {
-            fputs("failed to send to client", stderr);
-            break;
-        }
-
-
-        memset(recv_buffer, 0, PACKET_MAX);
-        memset(send_buffer, 0, PACKET_MAX);
-        memset(plaintext, 0, PACKET_MAX);
-        memset(ciphertext, 0, PACKET_MAX);
-        */
     }
 
     return NULL;
