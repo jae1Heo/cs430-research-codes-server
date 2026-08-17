@@ -20,6 +20,9 @@ int init_server(struct sock* serv_sock, const unsigned short un_port) {
     serv_sock->sock_addr.sin_port = un_port; // open for un_port port number (currently 12345)
     serv_sock->sock_len = sizeof(serv_sock->sock_addr); // size of address struct
 
+    int flag = 1;
+    setsockopt(serv_sock->sock_fd, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(int));
+
     // bind the server socket
     if(bind(serv_sock->sock_fd, (struct sockaddr*)&serv_sock->sock_addr, serv_sock->sock_len) < 0) {
         perror("bind() error");
